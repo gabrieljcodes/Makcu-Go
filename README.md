@@ -136,12 +136,31 @@ func main(){
     ```go
     err := MakcuConn.MiddleClick()
     ```
+- **Mouse Button Constants:**: Constants for mouse buttons to be used with `MakcuConn.Click()` And `MakcuConn.LockMouse()`.
+    ```go
+    const (
+	    makcu.MOUSE_BUTTON_LEFT   = 1 // Left mouse button
+	    makcu.MOUSE_BUTTON_RIGHT  = 2 // Right mouse button
+	    makcu.MOUSE_BUTTON_MIDDLE = 3 // Middle mouse button
+	    makcu.MOUSE_BUTTON_SIDE1  = 4 // Side mouse button
+	    makcu.MOUSE_BUTTON_SIDE2  = 5 // Side mouse button 2
+	    makcu.MOUSE_X             = 6 // X axis
+	    makcu.MOUSE_Y             = 7 // Y axis
+    )
+    ```
 - **MakcuConn.Click(i int, delay time.Duration)**: Simulates a mouse click with a given delay between the press and the release.
     ```go
-    // MOUSE_BUTTON_LEFT = 1, MOUSE_BUTTON_RIGHT = 2, MOUSE_BUTTON_MIDDLE = 3
     err := MakcuConn.Click(makcu.MOUSE_BUTTON_LEFT, 1 *time.Second)
     err := MakcuConn.Click(makcu.MOUSE_BUTTON_RIGHT, 1 *time.Second)
     err := MakcuConn.Click(makcu.MOUSE_BUTTON_MIDDLE, 1 *time.Second)
+    ```
+- **MakcuConn.CickMouse()**: Wraper around `MakcuConn.Click()` that simulates a left mouse click.
+    ```go
+    err := MakcuConn.ClickMouse()
+    ```
+- **MakcuConn.LockMouse(Button int, lock int)**: Locks or unlocks the specified mouse button. lock = 1 to disable and lock =0 0 to enable.
+    ```go
+    err := MakcuConn.LockMouse(makcu.MOUSE_BUTTON_LEFT, 1) // this will prevent all left mouse clicks until lock = 0
     ```
 - **MakcuConn.MoveMouse(x, y int)**: Moves the mouse cursor over (x, y) pixels.
     ```go
@@ -157,7 +176,6 @@ func main(){
 - **MakcuConn.ScrollMouse(amount int)**: Scrolls the mouse by the specified amount (positive for up, negative for down).
     ```go
     err := MakcuConn.ScrollMouse(6)
-    fix v23
     ```
 
   

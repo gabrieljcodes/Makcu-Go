@@ -590,7 +590,7 @@ func (m *MakcuHandle) ClickMouse() error {
 // 🐱🐱🐱 Cat click! 🐱🐱🐱
 
 // 🐱 if lock is = 1 it will prevent any input using that button until lock = 0.
-func (m *MakcuHandle) MouseLock(Option int, lock int) error {
+func (m *MakcuHandle) LockMouse(Button int, lock int) error {
 	if m == nil {
 		return fmt.Errorf("MouseLock: MakcuHandle is nil (no device connected)")
 	}
@@ -599,7 +599,7 @@ func (m *MakcuHandle) MouseLock(Option int, lock int) error {
 		return fmt.Errorf("MouseLock: lock must be 1(lock) or 0(unlock)")
 	}
 
-	switch Option {
+	switch Button {
 	case MOUSE_BUTTON_LEFT:
 		_, err := m.Write([]byte("km.lock_ml(" + strconv.Itoa(lock) + ")\r"))
 		if err != nil {
@@ -683,7 +683,6 @@ func (m *MakcuHandle) MoveMouse(x, y int) error {
 }
 
 // 🐱🐱🐱 Cat move! 🐱🐱🐱
-
 // use a curve with the built in curve functionality from MAKCU... i THINK this is only on fw v3+ ??? idk don't care to fact check it rn either :)
 // "It is common sense that the higher the number of the third parameter, the smoother the curve will be fitted" - from MAKCU/km box docs
 func (m *MakcuHandle) MoveMouseWithCurve(x, y int, params ...int) error {
