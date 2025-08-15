@@ -643,7 +643,7 @@ func (m *MakcuHandle) LockMouse(Button int, lock int) error {
 			return err
 		}
 	default:
-		return fmt.Errorf("invalid mouse button: %d", Option)
+		return fmt.Errorf("invalid mouse button: %d", Button)
 
 	}
 

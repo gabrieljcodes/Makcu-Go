@@ -160,7 +160,7 @@ func main(){
     ```
 - **MakcuConn.LockMouse(Button int, lock int)**: Locks or unlocks the specified mouse button. lock = 1 to disable and lock =0 0 to enable.
     ```go
-    err := MakcuConn.LockMouse(makcu.MOUSE_BUTTON_LEFT, 1) // this will prevent all left mouse clicks until lock = 0
+    err := MakcuConn.LockMouse(makcu.MOUSE_BUTTON_LEFT, 1) // This will prevent all left mouse clicks until lock = 0
     ```
 - **MakcuConn.MoveMouse(x, y int)**: Moves the mouse cursor over (x, y) pixels.
     ```go
@@ -177,5 +177,7 @@ func main(){
     ```go
     err := MakcuConn.ScrollMouse(6)
     ```
+
+
 
   
