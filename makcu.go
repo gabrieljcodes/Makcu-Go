@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -535,6 +536,10 @@ const (
 	MOUSE_BUTTON_LEFT   = 1
 	MOUSE_BUTTON_RIGHT  = 2
 	MOUSE_BUTTON_MIDDLE = 3
+	MOUSE_BUTTON_SIDE1  = 4
+	MOUSE_BUTTON_SIDE2  = 5
+	MOUSE_X             = 6
+	MOUSE_Y             = 7
 )
 
 // 🐱 Clicks a mouse button
@@ -583,6 +588,67 @@ func (m *MakcuHandle) ClickMouse() error {
 }
 
 // 🐱🐱🐱 Cat click! 🐱🐱🐱
+
+// 🐱 if lock is = 1 it will prevent any input using that button until lock = 0.
+func (m *MakcuHandle) MouseLock(Option int, lock int) error {
+	if m == nil {
+		return fmt.Errorf("MouseLock: MakcuHandle is nil (no device connected)")
+	}
+
+	if lock != 1 && lock != 0 {
+		return fmt.Errorf("MouseLock: lock must be 1(lock) or 0(unlock)")
+	}
+
+	switch Option {
+	case MOUSE_BUTTON_LEFT:
+		_, err := m.Write([]byte("km.lock_ml(" + strconv.Itoa(lock) + ")\r"))
+		if err != nil {
+			DebugPrint("Failed to lock mouse: Write Error: %v", err)
+			return err
+		}
+	case MOUSE_BUTTON_RIGHT:
+		_, err := m.Write([]byte("km.lock_mr(" + strconv.Itoa(lock) + ")\r"))
+		if err != nil {
+			DebugPrint("Failed to lock mouse: Write Error: %v", err)
+			return err
+		}
+	case MOUSE_BUTTON_MIDDLE:
+		_, err := m.Write([]byte("km.lock_mm(" + strconv.Itoa(lock) + ")\r"))
+		if err != nil {
+			DebugPrint("Failed to lock mouse: Write Error: %v", err)
+			return err
+		}
+	case MOUSE_BUTTON_SIDE1:
+		_, err := m.Write([]byte("km.lock_ms1(" + strconv.Itoa(lock) + ")\r"))
+		if err != nil {
+			DebugPrint("Failed to lock mouse: Write Error: %v", err)
+			return err
+		}
+	case MOUSE_BUTTON_SIDE2:
+		_, err := m.Write([]byte("km.lock_ms2(" + strconv.Itoa(lock) + ")\r"))
+		if err != nil {
+			DebugPrint("Failed to lock mouse: Write Error: %v", err)
+			return err
+		}
+	case MOUSE_X:
+		_, err := m.Write([]byte("km.lock_mx(" + strconv.Itoa(lock) + ")\r"))
+		if err != nil {
+			DebugPrint("Failed to lock mouse: Write Error: %v", err)
+			return err
+		}
+	case MOUSE_Y:
+		_, err := m.Write([]byte("km.lock_my(" + strconv.Itoa(lock) + ")\r"))
+		if err != nil {
+			DebugPrint("Failed to lock mouse: Write Error: %v", err)
+			return err
+		}
+	default:
+		return fmt.Errorf("invalid mouse button: %d", Option)
+
+	}
+
+	return nil
+}
 
 // 🐱 Scrolls the mouse
 func (m *MakcuHandle) ScrollMouse(amount int) error {
