@@ -1,6 +1,5 @@
 package makcu
 
-//newest pdate
 import (
 	"fmt"
 	"log/slog"
@@ -597,7 +596,7 @@ func (m *MakcuHandle) GetButtonStatus() (int, error) {
     }
 
 	buf := make([]byte, 128)
-    n, err := MakcuConn.Read(buf)
+    n, err := m.Read(buf)
     if err != nil {
         return -1, err
     }
@@ -624,7 +623,7 @@ func (m *MakcuHandle) SetButtonStatus(enable bool) error {
         cmd = "km.buttons(0)\r"
     }
 
-    _, err := MakcuConn.Write([]byte(cmd))
+    _, err := m.Write([]byte(cmd))
     if err != nil {
         return fmt.Errorf("failed to set button status: %v", err)
     }
@@ -689,3 +688,4 @@ func (m *MakcuHandle) MoveMouseWithCurve(x, y int, params ...int) error {
 
 	return nil
 }
+
