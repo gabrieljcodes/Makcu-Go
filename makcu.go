@@ -591,7 +591,7 @@ func (m *MakcuHandle) GetButtonStatus() (int, error) {
         return -1, fmt.Errorf("MAKCU not connected")
     }
 
-    err := m.Write([]byte("km.buttons()\r"))
+    _, err := m.Write([]byte("km.buttons()\r"))
     if err != nil {
         return -1, err
     }
@@ -613,9 +613,9 @@ func (m *MakcuHandle) GetButtonStatus() (int, error) {
 }
 
 func (m *MakcuHandle) SetButtonStatus(enable bool) error {
-    if !isConnected || MakcuConn == nil {
-        return fmt.Errorf("MAKCU not connected")
-    }
+	if m == nil {
+		return fmt.Errorf("MAKCU not connected")
+	}
 
     var cmd string
     if enable {
@@ -624,7 +624,7 @@ func (m *MakcuHandle) SetButtonStatus(enable bool) error {
         cmd = "km.buttons(0)\r"
     }
 
-    err := MakcuConn.Write([]byte(cmd))
+    _, err := MakcuConn.Write([]byte(cmd))
     if err != nil {
         return fmt.Errorf("failed to set button status: %v", err)
     }
