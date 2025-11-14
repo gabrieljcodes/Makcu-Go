@@ -1,7 +1,6 @@
 package makcu
 
 //newest pdate
-// 🐱 Imports
 import (
 	"fmt"
 	"log/slog"
@@ -17,31 +16,24 @@ import (
 	"golang.org/x/sys/windows/registry"
 )
 
-// 🐱 Debug flag
 var Debug bool = false
 
-// 🐱 Logger instance
 var logger = slog.New(slog.NewTextHandler(os.Stdout, nil))
 
 func DebugPrint(s string, a ...interface{}) {
 	if Debug {
-		logger.Debug(fmt.Sprintf("🐱 "+s, a...))
+		logger.Debug(fmt.Sprintf(s, a...))
 	}
 }
 
-// 🐱🐱🐱 Cat debug function! 🐱🐱🐱
-
 func InfoPrint(s string, a ...interface{}) {
-	logger.Info(fmt.Sprintf("🐱🟢 "+s, a...))
+	logger.Info(fmt.Sprintf(s, a...))
 }
-
-// 🐱🐱🐱 Cat info function! 🐱🐱🐱
 
 func ErrorPrint(s string, a ...interface{}) {
-	logger.Error(fmt.Sprintf("🐱🔴 "+s, a...))
+	logger.Error(fmt.Sprintf(s, a...))
 }
 
-// 🐱 Converts UTF16 buffer to string
 func utf16ToString(buf []uint16) string {
 	for i, v := range buf {
 		if v == 0 {
@@ -51,18 +43,12 @@ func utf16ToString(buf []uint16) string {
 	return syscall.UTF16ToString(buf)
 }
 
-// 🐱🐱🐱 Cat string conversion! 🐱🐱🐱
-
-// 🐱 Gets device info
 func GetDeviceInfo(h, devInfo unsafe.Pointer, getProp *syscall.LazyProc, propertyCode uint32) string {
 	buf := make([]uint16, 512)
 	getProp.Call(uintptr(h), uintptr(devInfo), uintptr(propertyCode), 0, uintptr(unsafe.Pointer(&buf[0])), uintptr(len(buf)*2), 0)
 	return utf16ToString(buf)
 }
 
-// 🐱🐱🐱 Cat device info! 🐱🐱🐱
-
-// 🐱 Gets port name from registry
 func GetPortName(hDevInfo uintptr, devInfoData *byte) (string, error) {
 	setupapi := syscall.NewLazyDLL("setupapi.dll")
 	setupDiOpenDevRegKey := setupapi.NewProc("SetupDiOpenDevRegKey")
@@ -83,9 +69,6 @@ func GetPortName(hDevInfo uintptr, devInfoData *byte) (string, error) {
 	return portName, nil
 }
 
-// 🐱🐱🐱 Cat port name! 🐱🐱🐱
-
-// 🐱 Device property constants
 const (
 	DeviceDescription = 0x0 // Device Description (ex: USB-Enhanced-SERIAL CH343)
 	HardwareID        = 0x1 // Hardware ID (ex: USB\VID_1A86&PID_55D3&REV_0445)
@@ -113,8 +96,6 @@ func Find() (string, error) {
 			ErrorPrint("Failed to destroy device info list handle")
 		}
 	}()
-
-	// 🐱🐱🐱 Cat device search! 🐱🐱🐱
 
 	for index := 0; ; index++ {
 		var devInfo struct {
@@ -194,9 +175,6 @@ func SetTimeouts(handle windows.Handle) error {
 	return nil
 }
 
-// 🐱🐱🐱 Cat timeouts! 🐱🐱🐱
-
-// 🐱 Handle for MAKCU device
 type MakcuHandle struct {
 	Port   string
 	handle windows.Handle
@@ -256,8 +234,6 @@ func Connect(portName string, baudRate uint32) (*MakcuHandle, error) {
 	}, nil
 }
 
-// 🐱🐱🐱 Cat connect! 🐱🐱🐱
-
 // Close the connection to the MAKCU
 func (m *MakcuHandle) Close() error {
 	if m == nil {
@@ -271,8 +247,6 @@ func (m *MakcuHandle) Close() error {
 
 	return nil
 }
-
-// 🐱🐱🐱 Cat close! 🐱🐱🐱
 
 // Sends the bytes needed to change the Baud Rate of the MAKCU to 4m and then returns a new Connection object with the new baud rate
 // Note: This is NOT a permanent change and will reset back to the default 115200 baud rate after the MAKCU powers off and then back on again.
@@ -330,8 +304,6 @@ func ChangeBaudRate(m *MakcuHandle) (*MakcuHandle, error) {
 	return NewConn, nil
 }
 
-// 🐱🐱🐱 Cat baud rate! 🐱🐱🐱
-
 // Sends the given bytes to the MAKCU and returns the number of bytes written.
 func (m *MakcuHandle) Write(data []byte) (int, error) {
 	if m == nil {
@@ -356,8 +328,6 @@ func (m *MakcuHandle) Write(data []byte) (int, error) {
 	return int(bytesWritten), nil
 }
 
-// 🐱🐱🐱 Cat write! 🐱🐱🐱
-
 // Reads data from the MAKCU and saves it to a given buffer then returns the number of bytes read.
 func (m *MakcuHandle) Read(buffer []byte) (int, error) {
 	if m == nil {
@@ -376,9 +346,6 @@ func (m *MakcuHandle) Read(buffer []byte) (int, error) {
 	return int(bytesRead), nil
 }
 
-// 🐱🐱🐱 Cat read! 🐱🐱🐱
-
-// 🐱 Mouse left down
 func (m *MakcuHandle) LeftDown() error {
 	if m == nil {
 		return fmt.Errorf("LeftDown: MakcuHandle is nil (no device connected)")
@@ -393,9 +360,6 @@ func (m *MakcuHandle) LeftDown() error {
 	return nil
 }
 
-// 🐱🐱🐱 Cat left down! 🐱🐱🐱
-
-// 🐱 Mouse left up
 func (m *MakcuHandle) LeftUp() error {
 	if m == nil {
 		return fmt.Errorf("LeftUp: MakcuHandle is nil (no device connected)")
@@ -410,9 +374,6 @@ func (m *MakcuHandle) LeftUp() error {
 	return nil
 }
 
-// 🐱🐱🐱 Cat left up! 🐱🐱🐱
-
-// 🐱 Mouse left click
 func (m *MakcuHandle) LeftClick() error {
 	if m == nil {
 		return fmt.Errorf("LeftClick: MakcuHandle is nil (no device connected)")
@@ -427,9 +388,6 @@ func (m *MakcuHandle) LeftClick() error {
 	return nil
 }
 
-// 🐱🐱🐱 Cat left click! 🐱🐱🐱
-
-// 🐱 Mouse right down
 func (m *MakcuHandle) RightDown() error {
 	if m == nil {
 		return fmt.Errorf("RightDown: MakcuHandle is nil (no device connected)")
@@ -444,9 +402,6 @@ func (m *MakcuHandle) RightDown() error {
 	return nil
 }
 
-// 🐱🐱🐱 Cat right down! 🐱🐱🐱
-
-// 🐱 Mouse right up
 func (m *MakcuHandle) RightUp() error {
 	if m == nil {
 		return fmt.Errorf("RightUp: MakcuHandle is nil (no device connected)")
@@ -461,9 +416,6 @@ func (m *MakcuHandle) RightUp() error {
 	return nil
 }
 
-// 🐱🐱🐱 Cat right up! 🐱🐱🐱
-
-// 🐱 Mouse right click
 func (m *MakcuHandle) RightClick() error {
 	if m == nil {
 		return fmt.Errorf("RightClick: MakcuHandle is nil (no device connected)")
@@ -478,9 +430,6 @@ func (m *MakcuHandle) RightClick() error {
 	return nil
 }
 
-// 🐱🐱🐱 Cat right click! 🐱🐱🐱
-
-// 🐱 Mouse middle down
 func (m *MakcuHandle) MiddleDown() error {
 	if m == nil {
 		return fmt.Errorf("MiddleDown: MakcuHandle is nil (no device connected)")
@@ -495,9 +444,6 @@ func (m *MakcuHandle) MiddleDown() error {
 	return nil
 }
 
-// 🐱🐱🐱 Cat middle down! 🐱🐱🐱
-
-// 🐱 Mouse middle up
 func (m *MakcuHandle) MiddleUp() error {
 	if m == nil {
 		return fmt.Errorf("MiddleUp: MakcuHandle is nil (no device connected)")
@@ -512,9 +458,6 @@ func (m *MakcuHandle) MiddleUp() error {
 	return nil
 }
 
-// 🐱🐱🐱 Cat middle up 🖕! 🐱🐱🐱
-
-// 🐱 Mouse middle click
 func (m *MakcuHandle) MiddleClick() error {
 	if m == nil {
 		return fmt.Errorf("MiddleClick: MakcuHandle is nil (no device connected)")
@@ -529,9 +472,6 @@ func (m *MakcuHandle) MiddleClick() error {
 	return nil
 }
 
-// 🐱🐱🐱 Cat middle click! 🐱🐱🐱
-
-// 🐱 Mouse button constants
 const (
 	MOUSE_BUTTON_LEFT   = 1
 	MOUSE_BUTTON_RIGHT  = 2
@@ -542,7 +482,6 @@ const (
 	MOUSE_Y             = 7
 )
 
-// 🐱 Clicks a mouse button
 func (m *MakcuHandle) Click(i int, delay time.Duration) error {
 	if m == nil {
 		return fmt.Errorf("Click: MakcuHandle is nil (no device connected)")
@@ -587,9 +526,6 @@ func (m *MakcuHandle) ClickMouse() error {
 	return m.Click(MOUSE_BUTTON_LEFT, 0)
 }
 
-// 🐱🐱🐱 Cat click! 🐱🐱🐱
-
-// 🐱 if lock is = 1 it will prevent any input using that button until lock = 0.
 func (m *MakcuHandle) LockMouse(Button int, lock int) error {
 	if m == nil {
 		return fmt.Errorf("MouseLock: MakcuHandle is nil (no device connected)")
@@ -650,7 +586,53 @@ func (m *MakcuHandle) LockMouse(Button int, lock int) error {
 	return nil
 }
 
-// 🐱 Scrolls the mouse
+func (m *MakcuHandle) GetButtonStatus() (int, error) {
+    if m == nil {
+        return -1, fmt.Errorf("MAKCU not connected")
+    }
+
+    err := m.Write([]byte("km.buttons()\r"))
+    if err != nil {
+        return -1, err
+    }
+
+	buf := make([]byte, 128)
+    n, err := MakcuConn.Read(buf)
+    if err != nil {
+        return -1, err
+    }
+
+    response := string(buf[:n])
+    if strings.Contains(response, "1") {
+        return 1, nil
+    } else if strings.Contains(response, "0") {
+        return 0, nil
+    }
+
+    return -1, fmt.Errorf("could not parse buttons status")
+}
+
+func (m *MakcuHandle) SetButtonStatus(enable bool) error {
+    if !isConnected || MakcuConn == nil {
+        return fmt.Errorf("MAKCU not connected")
+    }
+
+    var cmd string
+    if enable {
+        cmd = "km.buttons(1)\r"
+    } else {
+        cmd = "km.buttons(0)\r"
+    }
+
+    err := MakcuConn.Write([]byte(cmd))
+    if err != nil {
+        return fmt.Errorf("failed to set button status: %v", err)
+    }
+
+    DebugPrint("Button echo %s\n", map[bool]string{true: "enabled", false: "disabled"}[enable])
+    return nil
+}
+
 func (m *MakcuHandle) ScrollMouse(amount int) error {
 	if m == nil {
 		return fmt.Errorf("ScrollMouse: MakcuHandle is nil (no device connected)")
@@ -665,9 +647,6 @@ func (m *MakcuHandle) ScrollMouse(amount int) error {
 	return nil
 }
 
-// 🐱🐱🐱 Cat scroll! 🐱🐱🐱
-
-// 🐱 Moves the mouse
 func (m *MakcuHandle) MoveMouse(x, y int) error {
 	if m == nil {
 		return fmt.Errorf("MoveMouse: MakcuHandle is nil (no device connected)")
@@ -682,7 +661,6 @@ func (m *MakcuHandle) MoveMouse(x, y int) error {
 	return nil
 }
 
-// 🐱🐱🐱 Cat move! 🐱🐱🐱
 // use a curve with the built in curve functionality from MAKCU... i THINK this is only on fw v3+ ??? idk don't care to fact check it rn either :)
 // "It is common sense that the higher the number of the third parameter, the smoother the curve will be fitted" - from MAKCU/km box docs
 func (m *MakcuHandle) MoveMouseWithCurve(x, y int, params ...int) error {
