@@ -176,7 +176,7 @@ func SetTimeouts(handle windows.Handle) error {
 
 type MakcuHandle struct {
 	Port   string
-	handle windows.Handle
+	Handle windows.Handle
 	dcb    windows.DCB
 }
 
@@ -688,4 +688,5 @@ func (m *MakcuHandle) MoveMouseWithCurve(x, y int, params ...int) error {
 
 	return nil
 }
+
 
