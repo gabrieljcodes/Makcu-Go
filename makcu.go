@@ -92,7 +92,7 @@ func Find() (string, error) {
 	defer func() {
 		ret, _, _ := destroyDeviceList.Call(h)
 		if ret == 0 {
-			ErrorPrint("Failed to destroy device info list handle")
+			ErrorPrint("Failed to destroy device info list Handle")
 		}
 	}()
 
@@ -155,7 +155,7 @@ func Find() (string, error) {
 }
 
 // Sets the timeout settings for the COM port
-func SetTimeouts(handle windows.Handle) error {
+func SetTimeouts(Handle windows.Handle) error {
 	kernel32 := syscall.NewLazyDLL("kernel32.dll")
 	setCommTimeouts := kernel32.NewProc("SetCommTimeouts")
 
@@ -166,7 +166,7 @@ func SetTimeouts(handle windows.Handle) error {
 	timeouts.WriteTotalTimeoutMultiplier = 10 // Timeout for writing
 	timeouts.WriteTotalTimeoutConstant = 500  // Timeout in milliseconds for the entire write operation
 
-	ret, _, err := setCommTimeouts.Call(uintptr(handle), uintptr(unsafe.Pointer(&timeouts)))
+	ret, _, err := setCommTimeouts.Call(uintptr(Handle), uintptr(unsafe.Pointer(&timeouts)))
 	if ret == 0 {
 		return fmt.Errorf("SetTimeouts: SetCommTimeouts failed: %w", err)
 	}
@@ -195,12 +195,12 @@ func Connect(portName string, baudRate uint32) (*MakcuHandle, error) {
 		return nil, fmt.Errorf("Connect: failed to convert port name to UTF16: %w", err)
 	}
 
-	handle, _, err := openPort.Call(uintptr(unsafe.Pointer(path)), syscall.GENERIC_READ|syscall.GENERIC_WRITE, 0, 0, 3, syscall.FILE_ATTRIBUTE_NORMAL, 0)
-	if handle == uintptr(syscall.InvalidHandle) {
+	Handle, _, err := openPort.Call(uintptr(unsafe.Pointer(path)), syscall.GENERIC_READ|syscall.GENERIC_WRITE, 0, 0, 3, syscall.FILE_ATTRIBUTE_NORMAL, 0)
+	if Handle == uintptr(syscall.InvalidHandle) {
 		return nil, fmt.Errorf("Connect: failed to open port: %w", err)
 	}
 
-	portHandle := windows.Handle(handle)
+	portHandle := windows.Handle(Handle)
 	// set the settings for the serial communications
 	dcbOpts := &windows.DCB{}
 	dcbOpts.DCBlength = uint32(unsafe.Sizeof(*dcbOpts))
@@ -228,7 +228,7 @@ func Connect(portName string, baudRate uint32) (*MakcuHandle, error) {
 
 	return &MakcuHandle{
 		Port:   CleanPort,
-		handle: portHandle,
+		Handle: portHandle,
 		dcb:    *dcbOpts,
 	}, nil
 }
@@ -239,9 +239,9 @@ func (m *MakcuHandle) Close() error {
 		return fmt.Errorf("Close: MakcuHandle is nil (no device connected)")
 	}
 
-	err := windows.CloseHandle(m.handle)
+	err := windows.CloseHandle(m.Handle)
 	if err != nil {
-		return fmt.Errorf("Close: failed to close handle: %w", err)
+		return fmt.Errorf("Close: failed to close Handle: %w", err)
 	}
 
 	return nil
@@ -256,7 +256,7 @@ func ChangeBaudRate(m *MakcuHandle) (*MakcuHandle, error) {
 
 	n, err := m.Write([]byte{0xDE, 0xAD, 0x05, 0x00, 0xA5, 0x00, 0x09, 0x3D, 0x00})
 	if err != nil {
-		// Always try to close the handle on error
+		// Always try to close the Handle on error
 		_ = m.Close()
 		return nil, fmt.Errorf("ChangeBaudRate: write error: %w", err)
 	}
@@ -319,7 +319,7 @@ func (m *MakcuHandle) Write(data []byte) (int, error) {
 
 	DebugPrint("Sending %s\r\n", data[:])
 
-	ret, _, err := writeFile.Call(uintptr(m.handle), uintptr(unsafe.Pointer(&data[0])), uintptr(len(data)), uintptr(unsafe.Pointer(&bytesWritten)), uintptr(unsafe.Pointer(&overlapped)))
+	ret, _, err := writeFile.Call(uintptr(m.Handle), uintptr(unsafe.Pointer(&data[0])), uintptr(len(data)), uintptr(unsafe.Pointer(&bytesWritten)), uintptr(unsafe.Pointer(&overlapped)))
 	if ret == 0 {
 		return -1, fmt.Errorf("Write: error writing to port: %w", err)
 	}
@@ -337,7 +337,7 @@ func (m *MakcuHandle) Read(buffer []byte) (int, error) {
 	readFile := kernel32.NewProc("ReadFile")
 
 	var bytesRead uint32
-	ret, _, err := readFile.Call(uintptr(m.handle), uintptr(unsafe.Pointer(&buffer[0])), uintptr(len(buffer)), uintptr(unsafe.Pointer(&bytesRead)), 0)
+	ret, _, err := readFile.Call(uintptr(m.Handle), uintptr(unsafe.Pointer(&buffer[0])), uintptr(len(buffer)), uintptr(unsafe.Pointer(&bytesRead)), 0)
 	if ret == 0 {
 		return -1, fmt.Errorf("Read: error reading from port: %w", err)
 	}
@@ -688,5 +688,6 @@ func (m *MakcuHandle) MoveMouseWithCurve(x, y int, params ...int) error {
 
 	return nil
 }
+
 
 
